@@ -88,6 +88,13 @@ securityScanning:
     # immutable generation layout containing .kkrepo-db-current and generations/generation-*.
     autoUpdate: true
     updateInterval: 6h
+    # Optional mirror for the Grype database listing and archives. Leave empty to use
+    # Grype's default https://grype.anchore.io/databases endpoint.
+    updateUrl: ""
+    # Optional CA Secret for an HTTPS mirror. The selected Secret key is mounted as ca.crt.
+    caCert:
+      existingSecret: ""
+      key: ca.crt
     # A separate non-serving CronJob checks the shared database on this schedule. The interval
     # above remains the minimum age between successful Grype updates.
     updateSchedule: "*/5 * * * *"
@@ -187,6 +194,11 @@ securityScanning:
         kubernetes.io/metadata.name: kube-system
       podSelector:
         k8s-app: kube-dns
+    # Optional explicit egress for a private HTTPS database mirror.
+    databaseMirror:
+      enabled: false
+      cidr: ""
+      port: 443
 
 resources:
   requests:

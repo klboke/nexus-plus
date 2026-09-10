@@ -135,6 +135,11 @@ volume read-only. It checks every five minutes by default while preserving the s
 successful-update interval. Publication-lock contention beyond ten minutes exits unsuccessfully
 so the restart policy retries.
 
+The Compose updater uses `https://grype.anchore.io/databases` by default. To use an internal HTTPS
+Grype database mirror, set `KKREPO_SCANNER_DB_UPDATE_URL` and uncomment the optional CA environment
+and volume entries in the selected Compose file. Set `KKREPO_SCANNER_DB_CA_CERT_FILE` to the host
+certificate path; the updater mounts it at `/etc/kkrepo-ca/ca.crt`.
+
 Check the containers and scanner readiness:
 
 ```bash
@@ -531,6 +536,9 @@ and OCI registry URL.
 | `KKREPO_SCANNER_DATABASE_UPDATE_ONLY` | `false` | Run one coordinated update and exit without creating the credential-protected HTTP controller; used by the dedicated updater |
 | `KKREPO_SCANNER_DATABASE_UPDATE_LOCK_TIMEOUT` | `10m` | Total bound for acquiring the cross-process publication lock; timeout fails the process so orchestration retries |
 | `KKREPO_SCANNER_DB_DIRECTORY` | `/var/lib/kkrepo-scanner/grype` | Shared root for immutable Grype database generations; serving containers mount it read-only |
+| `KKREPO_SCANNER_DB_UPDATE_URL` | `https://grype.anchore.io/databases` | Optional database listing and archive mirror URL |
+| `KKREPO_SCANNER_DB_CA_CERT` | Empty | Optional CA certificate path inside the updater container |
+| `KKREPO_SCANNER_DB_CA_CERT_FILE` | Not mounted | Compose host path for the optional read-only CA mount |
 | `KKREPO_SCANNER_DB_UPDATE_INTERVAL` | `6h` | Target update interval |
 | `KKREPO_SCANNER_DB_UPDATE_CHECK_INTERVAL` | `1m` | Update-eligibility check interval |
 | `KKREPO_SCANNER_MAX_CONCURRENT_SCANS` | `2` | Active scans per Pod |

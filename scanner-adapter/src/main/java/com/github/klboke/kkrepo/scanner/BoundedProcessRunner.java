@@ -587,7 +587,9 @@ public class BoundedProcessRunner {
         || key.equals("SYFT_LOG_QUIET")
         || key.equals("SYFT_SOURCE_IMAGE_MAX_LAYER_SIZE")
         || key.equals("GRYPE_DB_CACHE_DIR")
-        || key.equals("GRYPE_DB_AUTO_UPDATE");
+        || key.equals("GRYPE_DB_AUTO_UPDATE")
+        || key.equals("GRYPE_DB_UPDATE_URL")
+        || key.equals("GRYPE_DB_CA_CERT");
   }
 
   private static String sanitizeStderr(byte[] bytes) {

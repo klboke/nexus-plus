@@ -59,6 +59,14 @@ spec:
                   value: {{ .Values.securityScanning.limits.maxStderrBytes | quote }}
                 - name: KKREPO_SCANNER_DATABASE_UPDATE_LOCK_TIMEOUT
                   value: {{ .Values.securityScanning.scannerDatabase.updater.lockTimeout | quote }}
+                {{- with .Values.securityScanning.scannerDatabase.updateUrl }}
+                - name: KKREPO_SCANNER_DB_UPDATE_URL
+                  value: {{ . | quote }}
+                {{- end }}
+                {{- with .Values.securityScanning.scannerDatabase.caCert.existingSecret }}
+                - name: KKREPO_SCANNER_DB_CA_CERT
+                  value: /etc/kkrepo-ca/ca.crt
+                {{- end }}
               resources:
                 {{- toYaml .Values.securityScanning.scannerDatabase.updater.resources | nindent 16 }}
               volumeMounts:
@@ -66,6 +74,11 @@ spec:
                   mountPath: /tmp
                 - name: scanner-db
                   mountPath: /var/lib/kkrepo-scanner/grype
+                {{- if .Values.securityScanning.scannerDatabase.caCert.existingSecret }}
+                - name: scanner-db-ca
+                  mountPath: /etc/kkrepo-ca
+                  readOnly: true
+                {{- end }}
           volumes:
             - name: tmp
               emptyDir:
@@ -73,6 +86,14 @@ spec:
             - name: scanner-db
               persistentVolumeClaim:
                 claimName: {{ default (include "kkrepo.scannerDatabaseClaimName" .) .Values.securityScanning.scannerDatabase.persistence.existingClaim }}
+            {{- if .Values.securityScanning.scannerDatabase.caCert.existingSecret }}
+            - name: scanner-db-ca
+              secret:
+                secretName: {{ .Values.securityScanning.scannerDatabase.caCert.existingSecret }}
+                items:
+                  - key: {{ .Values.securityScanning.scannerDatabase.caCert.key }}
+                    path: ca.crt
+            {{- end }}
           {{- with .Values.nodeSelector }}
           nodeSelector:
             {{- toYaml . | nindent 12 }}

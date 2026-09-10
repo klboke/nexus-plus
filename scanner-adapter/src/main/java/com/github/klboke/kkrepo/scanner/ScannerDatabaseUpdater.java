@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -79,14 +80,20 @@ public class ScannerDatabaseUpdater {
     try {
       Files.createDirectories(properties.getWorkDirectory());
       workspace = Files.createTempDirectory(properties.getWorkDirectory(), "db-update-");
+      Map<String, String> scannerEnvironment = new LinkedHashMap<>();
+      scannerEnvironment.put("GRYPE_DB_AUTO_UPDATE", "true");
+      scannerEnvironment.put("GRYPE_DB_CACHE_DIR", databaseDirectory.toString());
+      scannerEnvironment.put(
+          "GRYPE_DB_UPDATE_URL", properties.getVulnerabilityDatabaseUpdateUrl());
+      if (!properties.getVulnerabilityDatabaseCaCert().isBlank()) {
+        scannerEnvironment.put("GRYPE_DB_CA_CERT", properties.getVulnerabilityDatabaseCaCert());
+      }
       processes.run(
           List.of(properties.getGrypeExecutable(), "db", "update"),
           workspace,
           workspace.resolve("stdout.log"),
           Duration.ofMinutes(30),
-          Map.of(
-              "GRYPE_DB_AUTO_UPDATE", "true",
-              "GRYPE_DB_CACHE_DIR", databaseDirectory.toString()));
+          scannerEnvironment);
     } catch (IOException e) {
       throw new ScannerRequestException(
           "SCANNER_DATABASE_UPDATE_IO",

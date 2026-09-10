@@ -34,6 +34,8 @@ kkrepo:
     syft-executable: ${KKREPO_SCANNER_SYFT_EXECUTABLE:syft}
     grype-executable: ${KKREPO_SCANNER_GRYPE_EXECUTABLE:grype}
     vulnerability-database-directory: ${KKREPO_SCANNER_DB_DIRECTORY:/var/lib/kkrepo-scanner/grype}
+    vulnerability-database-update-url: ${KKREPO_SCANNER_DB_UPDATE_URL:${GRYPE_DB_UPDATE_URL:https://grype.anchore.io/databases}}
+    vulnerability-database-ca-cert: ${KKREPO_SCANNER_DB_CA_CERT:${GRYPE_DB_CA_CERT:}}
     vulnerability-database-auto-update: ${KKREPO_SCANNER_DB_AUTO_UPDATE:false}
     database-update-only: ${KKREPO_SCANNER_DATABASE_UPDATE_ONLY:false}
     vulnerability-database-update-interval: ${KKREPO_SCANNER_DB_UPDATE_INTERVAL:6h}

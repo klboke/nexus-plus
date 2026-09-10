@@ -87,5 +87,13 @@ spec:
       ports:
         - protocol: TCP
           port: 443
+    {{- if and .Values.securityScanning.networkPolicy.databaseMirror.enabled .Values.securityScanning.networkPolicy.databaseMirror.cidr }}
+    - to:
+        - ipBlock:
+            cidr: {{ .Values.securityScanning.networkPolicy.databaseMirror.cidr }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.securityScanning.networkPolicy.databaseMirror.port }}
+    {{- end }}
 {{- end }}
 {{- end }}

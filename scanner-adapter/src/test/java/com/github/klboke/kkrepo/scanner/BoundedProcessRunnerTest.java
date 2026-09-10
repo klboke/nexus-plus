@@ -99,6 +99,19 @@ class BoundedProcessRunnerTest {
         Map.of("GRYPE_DB_CACHE_DIR", explicitDatabase.toString()));
     assertEquals(explicitDatabase.toString(), Files.readString(environmentOutput));
 
+    Path mirrorOutput = directory.resolve("mirror-environment.out");
+    runner.run(
+        List.of("/bin/sh", "-c", "printf '%s|%s' \"$GRYPE_DB_UPDATE_URL\" \"$GRYPE_DB_CA_CERT\""),
+        directory,
+        mirrorOutput,
+        Duration.ofSeconds(2),
+        Map.of(
+            "GRYPE_DB_UPDATE_URL", "https://mirror.example/grype-db",
+            "GRYPE_DB_CA_CERT", "/etc/ssl/mirror.crt"));
+    assertEquals(
+        "https://mirror.example/grype-db|/etc/ssl/mirror.crt",
+        Files.readString(mirrorOutput));
+
     ScannerRequestException failure = assertThrows(
         ScannerRequestException.class,
         () -> runner.run(

@@ -12,6 +12,8 @@ public class ScannerAdapterProperties {
   private String grypeExecutable = "grype";
   private Path vulnerabilityDatabaseDirectory =
       Path.of(System.getProperty("java.io.tmpdir"), "kkrepo-scanner-db");
+  private String vulnerabilityDatabaseUpdateUrl = "https://grype.anchore.io/databases";
+  private String vulnerabilityDatabaseCaCert = "";
   private boolean vulnerabilityDatabaseAutoUpdate;
   private Duration vulnerabilityDatabaseUpdateInterval = Duration.ofHours(6);
   private Duration vulnerabilityDatabaseUpdateCheckInterval = Duration.ofMinutes(1);
@@ -65,6 +67,24 @@ public class ScannerAdapterProperties {
 
   public void setVulnerabilityDatabaseDirectory(Path vulnerabilityDatabaseDirectory) {
     this.vulnerabilityDatabaseDirectory = vulnerabilityDatabaseDirectory;
+  }
+
+  public String getVulnerabilityDatabaseUpdateUrl() {
+    return vulnerabilityDatabaseUpdateUrl;
+  }
+
+  public void setVulnerabilityDatabaseUpdateUrl(String vulnerabilityDatabaseUpdateUrl) {
+    this.vulnerabilityDatabaseUpdateUrl = vulnerabilityDatabaseUpdateUrl == null
+        ? "https://grype.anchore.io/databases" : vulnerabilityDatabaseUpdateUrl;
+  }
+
+  public String getVulnerabilityDatabaseCaCert() {
+    return vulnerabilityDatabaseCaCert;
+  }
+
+  public void setVulnerabilityDatabaseCaCert(String vulnerabilityDatabaseCaCert) {
+    this.vulnerabilityDatabaseCaCert = vulnerabilityDatabaseCaCert == null
+        ? "" : vulnerabilityDatabaseCaCert;
   }
 
   public boolean isVulnerabilityDatabaseAutoUpdate() {

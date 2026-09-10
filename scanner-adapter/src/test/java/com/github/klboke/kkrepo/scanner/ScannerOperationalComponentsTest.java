@@ -23,6 +23,7 @@ import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
@@ -53,6 +54,8 @@ class ScannerOperationalComponentsTest {
     ScannerAdapterProperties properties = new ScannerAdapterProperties();
     properties.setWorkDirectory(temporaryDirectory.resolve("work"));
     properties.setVulnerabilityDatabaseDirectory(temporaryDirectory.resolve("db"));
+    properties.setVulnerabilityDatabaseUpdateUrl("https://mirror.example/grype-db");
+    properties.setVulnerabilityDatabaseCaCert("/etc/ssl/mirror.crt");
     BoundedProcessRunner processes = mock(BoundedProcessRunner.class);
     ScannerEngineService engine = mock(ScannerEngineService.class);
     ScannerAdapterMetrics metrics = mock(ScannerAdapterMetrics.class);
@@ -68,7 +71,12 @@ class ScannerOperationalComponentsTest {
 
     properties.setVulnerabilityDatabaseAutoUpdate(true);
     updater.update();
-    verify(processes).run(anyList(), any(), any(), any(), any());
+    @SuppressWarnings("unchecked")
+    ArgumentCaptor<Map<String, String>> environment = ArgumentCaptor.forClass(Map.class);
+    verify(processes).run(anyList(), any(), any(), any(), environment.capture());
+    assertEquals(
+        "https://mirror.example/grype-db", environment.getValue().get("GRYPE_DB_UPDATE_URL"));
+    assertEquals("/etc/ssl/mirror.crt", environment.getValue().get("GRYPE_DB_CA_CERT"));
     verify(engine).invalidateReadiness();
 
     properties.setVulnerabilityDatabaseUpdateInterval(Duration.ZERO);
